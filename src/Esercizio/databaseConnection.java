@@ -18,36 +18,9 @@ public class databaseConnection {
         this.password = password;
     }
 
-    // Metodo per leggere i dati dal DB
-    public void leggiDati(String query) {
-        try (Connection conn = DriverManager.getConnection(url, username, password);
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
-
-            // Stampare i dati della tabella
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                String nome = rs.getString("nome");
-                String cognome = rs.getString("cognome");
-
-                System.out.println("ID: " + id + ", Nome: " + nome + ", Cognome: " + cognome);
-            }
-
-        // Gestione degli errori
-        } catch (SQLException e) {
-            System.err.println("Errore SQL: " + e.getMessage());
-            e.printStackTrace();
-        } catch (Exception e) {
-            System.err.println("Errore generale: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    // Metodo per inserire i dati nel DB
     public void inserisciDati() {
         Scanner scanner = new Scanner(System.in);
 
-        // Leggere i dati dalla console
         System.out.print("Inserisci il nome: ");
         String nome = scanner.nextLine();
         
@@ -57,18 +30,38 @@ public class databaseConnection {
         String query = "INSERT INTO studenti (nome, cognome) VALUES (?, ?)";
         try (Connection conn = DriverManager.getConnection(url, username, password);
              PreparedStatement stmt = conn.prepareStatement(query)) {
-            
-            // Impostare i valori nella query
+
             stmt.setString(1, nome);
             stmt.setString(2, cognome);
-            
-            // Eseguire l'inserimento
-            int rowsAffected = stmt.executeUpdate();
-            System.out.println(rowsAffected + " righe inserite.");
+
+            int righeAggiunte = stmt.executeUpdate();
+            System.out.println(righeAggiunte + " righe inserite.");
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            scanner.close(); // Chiudere lo scanner
+            scanner.close();
+        }
+    }
+
+    public void leggiDati(String query) {
+        try (Connection conn = DriverManager.getConnection(url, username, password);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String nome = rs.getString("nome");
+                String cognome = rs.getString("cognome");
+
+                System.out.println("ID: " + id + ", Nome: " + nome + ", Cognome: " + cognome);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Errore SQL: " + e.getMessage());
+            e.printStackTrace();
+        } catch (Exception e) {
+            System.err.println("Errore generale: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }
